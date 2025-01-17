@@ -7,6 +7,7 @@ from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -43,9 +44,10 @@ class User(db.Model):
 
 
 class NameForm(FlaskForm):
-    name = StringField('What is your name?', validators=[DataRequired()])
-    role = SelectField(u'Role?:', choices=[('Administrator'), ('Moderator'), ('User')])
-    submit = SubmitField('Submit')
+    name = StringField('Cadastre o novo professor:', validators=[DataRequired()])
+    role = SelectField(u'Disciplina associada:', choices=[('DSWA5'), ('GPSA5'), ('IHCA5'),
+    ('SODA5'), ('PJIA5'), ('TCOA5')])
+    submit = SubmitField('Cadastrar')
 
 
 @app.shell_context_processor
@@ -58,9 +60,15 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template('500.html'), 500
+
+@app.route('/indisponivel')
+def indisponivel():
+  return render_template('indisponivel.html', current_time=datetime.utcnow())
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -70,7 +78,7 @@ def index():
     role_all = Role.query.all();
     print(user_all);
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.name.data).first()                        
+        user = User.query.filter_by(username=form.name.data).first()
         if user is None:
             user_role = Role.query.filter_by(name=form.role.data).first();
             user = User(username=form.name.data, role=user_role);
