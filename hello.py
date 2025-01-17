@@ -69,9 +69,13 @@ def internal_server_error(e):
 def indisponivel():
   return render_template('indisponivel.html', current_time=datetime.utcnow())
 
+@app.route('/')
+def professor():
+  return render_template('user.html')
 
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route('/professor', methods=['GET', 'POST'])
 def index():
     form = NameForm()
     user_all = User.query.all();
